@@ -60,12 +60,6 @@ async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Downloader."""
-    temp_files = os.listdir('./')
-    for files in temp_files:
-        if files.endswith(('py', 'txt', 'Procfile', 'md', 'json', 'text')):
-            print ("\n")
-        else:
-            os.remove(files)
     string = update.message.text
     pattern = '([^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})'
     URLS = re.findall(pattern, string)
