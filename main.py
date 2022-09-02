@@ -29,7 +29,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def downloader(links):
-    with yt_dlp.YoutubeDL({'max_filesize':50*1024*1024}) as ydl:
+    with yt_dlp.YoutubeDL({'max_filesize':50*1024*1024, 'format_sort': ['res:1080', 'ext:mp4:m4a']}) as ydl:
         error_code = ydl.download(links)
 
 # Define a few command handlers. These usually take the two arguments update and
