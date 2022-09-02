@@ -69,24 +69,30 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     downloaded_files = os.listdir('./')
     for files in downloaded_files:
         size =int((os.path.getsize(files))/(1024*1024))
-        while size < 50:
+        if size < 50:
             if files.endswith(('avi', 'flv', 'mkv', 'mov', 'mp4', 'webm', '3g2', '3gp', 'f4v', 'mk3d', 'divx', 'mpg', 'ogv', 'm4v', 'wmv')):
                 print("Found Short Video")
                 await context.bot.send_video(chat_id=update.message.chat_id, video=open(files, 'rb'), supports_streaming=True)
-                print("Video Sent Successfully!")
+                print("Video {} was Sent Successfully!".format(files))
                 os.remove(files)
-                await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
+                try:
+                    await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
+                except BaseException:
+                    print("Message was already deleted.")
 
             elif files.endswith(('aiff', 'alac', 'flac', 'm4a', 'mka', 'mp3', 'ogg', 'opus', 'wav','aac', 'ape', 'asf', 'f4a', 'f4b', 'm4b', 'm4p', 'm4r', 'oga', 'ogx', 'spx', 'vorbis', 'wma')):
                 print("Found Short Audio")
                 await context.bot.send_audio(chat_id=update.message.chat_id, audio=open(files, 'rb'))
-                print("Audio Sent Successfully!")
-                print(files)
+                print("Audio {} was Sent Successfully!".format(files))
                 os.remove(files)
-                await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
-            elif files.endswith(('part')):
+                try:
+                    await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
+                except BaseException:
+                    print("Message was already deleted. \n \n")    
+
+            elif files.endswith(('py','json','Procfile','txt','text','pip', 'md','git','pycache','cache'))==False:
                 os.remove(files)
-            break
+            time.sleep(1)
         else:
             print(files + "is "+str(size)+" MB."+"\n"+"Which is greater than 50 MB, So removing it !!")
             os.remove(files)

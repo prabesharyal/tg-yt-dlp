@@ -7,17 +7,15 @@ An python bot to download Public Videos/Audios from Links in Telegram Chat/Chann
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/prabesharyal/tg-yt-dlp/tree/main/)
 # Table of Contents
  1. [Introduction](#1)
-    1. [About User Bot](#1.1)
+    1. [About Bot](#1.1)
 	2. [Working Principle](#1.2)
- 2. [Knowing All Variables](#2)
-	1. [BOT Token](#2.1)
-    2. [Channel ID](#2.2)
-	3. [Other Notable Variables](#2.3)
- 4. [Requirements](#3)
+ 3. [Knowing All Variables](#2)
+	4. [BOT Token](#2.1)
+ 5. [Requirements](#3)
     1. [Python](#3.1)
 		1. [PIPs](#3.1.1)
- 5. [Deploy](#4)
- 6. [License](#lic)
+ 6. [Deploy](#4)
+ 7. [License](#lic)
 
 
 # Read this throughly before deploying the bot: <a name="1"></a>
