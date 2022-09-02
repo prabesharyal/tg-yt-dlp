@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 
 def downloader(links):
     for URL in links:
-        yt_dlp.YoutubeDL({'ignoreerrors':True}).download(URL)
+        with yt_dlp.YoutubeDL({'max_filesize':50*1024*1024}) as ydl:
+            error_code = ydl.download(URL)
 
 # Define a few command handlers. These usually take the two arguments update and
 # context.
@@ -67,18 +68,28 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     time.sleep(2)
     downloaded_files = os.listdir('./')
     for files in downloaded_files:
-        if files.endswith(('avi', 'flv', 'mkv', 'mov', 'mp4', 'webm', '3g2', '3gp', 'f4v', 'mk3d', 'divx', 'mpg', 'ogv', 'm4v', 'wmv')):
-            await context.bot.send_video(chat_id=update.message.chat_id, video=open(files, 'rb'), supports_streaming=True)
-            print("Sent video")
-            os.remove(files)
-            await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
+        size =int((os.path.getsize(files))/(1024*1024))
+        while size < 50:
+            if files.endswith(('avi', 'flv', 'mkv', 'mov', 'mp4', 'webm', '3g2', '3gp', 'f4v', 'mk3d', 'divx', 'mpg', 'ogv', 'm4v', 'wmv')):
+                print("Found Short Video")
+                await context.bot.send_video(chat_id=update.message.chat_id, video=open(files, 'rb'), supports_streaming=True)
+                print("Video Sent Successfully!")
+                os.remove(files)
+                await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
 
-        elif files.endswith(('aiff', 'alac', 'flac', 'm4a', 'mka', 'mp3', 'ogg', 'opus', 'wav','aac', 'ape', 'asf', 'f4a', 'f4b', 'm4b', 'm4p', 'm4r', 'oga', 'ogx', 'spx', 'vorbis', 'wma')):
-            await context.bot.send_audio(chat_id=update.message.chat_id, audio=open(files, 'rb'))
-            print("Sent audio")
-            print(files)
+            elif files.endswith(('aiff', 'alac', 'flac', 'm4a', 'mka', 'mp3', 'ogg', 'opus', 'wav','aac', 'ape', 'asf', 'f4a', 'f4b', 'm4b', 'm4p', 'm4r', 'oga', 'ogx', 'spx', 'vorbis', 'wma')):
+                print("Found Short Audio")
+                await context.bot.send_audio(chat_id=update.message.chat_id, audio=open(files, 'rb'))
+                print("Audio Sent Successfully!")
+                print(files)
+                os.remove(files)
+                await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
+            elif files.endswith(('part')):
+                os.remove(files)
+            break
+        else:
+            print(files + "is "+str(size)+" MB."+"\n"+"Which is greater than 50 MB, So removing it !!")
             os.remove(files)
-            await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
 
 def main() -> None:
     """Start the bot."""
