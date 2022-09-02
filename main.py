@@ -69,7 +69,9 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     downloaded_files = os.listdir('./')
     for files in downloaded_files:
         size =int((os.path.getsize(files))/(1024*1024))
-        if size < 50:
+        if os.path.isdir(files):
+            print("Skipping Check for Directory. \n")
+        elif size < 50:
             if files.endswith(('avi', 'flv', 'mkv', 'mov', 'mp4', 'webm', '3g2', '3gp', 'f4v', 'mk3d', 'divx', 'mpg', 'ogv', 'm4v', 'wmv')):
                 print("Found Short Video")
                 await context.bot.send_video(chat_id=update.message.chat_id, video=open(files, 'rb'), supports_streaming=True)
