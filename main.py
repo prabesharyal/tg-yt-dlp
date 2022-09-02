@@ -68,14 +68,14 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         downloaded_files = os.listdir('./')
         for files in downloaded_files:
             text = str(files.rsplit(' ', 1)[0])
-            CAPTION = str('[{}]({})'.format(text,URLS))
+            CAPTION = str('<a href="{}">{}</a>'.format(URLS,text))
             size =int((os.path.getsize(files))/(1024*1024))
             if os.path.isdir(files):
                 print("Skipping Check for Directory. \n")
             elif size < 50:
                 if files.endswith(('avi', 'flv', 'mkv', 'mov', 'mp4', 'webm', '3g2', '3gp', 'f4v', 'mk3d', 'divx', 'mpg', 'ogv', 'm4v', 'wmv')):
                     print("Found Short Video")
-                    await context.bot.send_video(chat_id=update.message.chat_id, video=open(files, 'rb'), supports_streaming=True,caption = CAPTION, parse_mode='Markdown')
+                    await context.bot.send_video(chat_id=update.message.chat_id, video=open(files, 'rb'), supports_streaming=True,caption = CAPTION, parse_mode='HTML')
                     print("Video {} was Sent Successfully!".format(files))
                     os.remove(files)
                     try:
@@ -85,7 +85,7 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
                 elif files.endswith(('aiff', 'alac', 'flac', 'm4a', 'mka', 'mp3', 'ogg', 'opus', 'wav','aac', 'ape', 'asf', 'f4a', 'f4b', 'm4b', 'm4p', 'm4r', 'oga', 'ogx', 'spx', 'vorbis', 'wma')):
                     print("Found Short Audio")
-                    await context.bot.send_audio(chat_id=update.message.chat_id, audio=open(files, 'rb'), caption = CAPTION, parse_mode='Markdown')
+                    await context.bot.send_audio(chat_id=update.message.chat_id, audio=open(files, 'rb'), caption = CAPTION, parse_mode='HTML')
                     print("Audio {} was Sent Successfully!".format(files))
                     os.remove(files)
                     try:
