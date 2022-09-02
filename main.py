@@ -6,7 +6,6 @@ from telegram import __version__ as TG_VER
 import yt_dlp
 import re
 import time
-
 try:
     from telegram import __version_info__
 except ImportError:
@@ -21,7 +20,7 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
 from telegram import ForceReply, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
-API_Hash =os.environ.get('BOT_TOKEN')
+API_Hash = os.environ.get('BOT_TOKEN')
 
 # Enable logging
 logging.basicConfig(
@@ -30,9 +29,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def downloader(links):
-    for URL in links:
-        with yt_dlp.YoutubeDL({'max_filesize':50*1024*1024}) as ydl:
-            error_code = ydl.download(URL)
+    with yt_dlp.YoutubeDL({'max_filesize':50*1024*1024}) as ydl:
+        error_code = ydl.download(links)
 
 # Define a few command handlers. These usually take the two arguments update and
 # context.
@@ -63,41 +61,44 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Downloader."""
     string = update.message.text
     pattern = '([^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})'
-    URLS = re.findall(pattern, string)
-    downloader(URLS)
-    time.sleep(2)
-    downloaded_files = os.listdir('./')
-    for files in downloaded_files:
-        size =int((os.path.getsize(files))/(1024*1024))
-        if os.path.isdir(files):
-            print("Skipping Check for Directory. \n")
-        elif size < 50:
-            if files.endswith(('avi', 'flv', 'mkv', 'mov', 'mp4', 'webm', '3g2', '3gp', 'f4v', 'mk3d', 'divx', 'mpg', 'ogv', 'm4v', 'wmv')):
-                print("Found Short Video")
-                await context.bot.send_video(chat_id=update.message.chat_id, video=open(files, 'rb'), supports_streaming=True)
-                print("Video {} was Sent Successfully!".format(files))
-                os.remove(files)
-                try:
-                    await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
-                except BaseException:
-                    print("Message was already deleted.")
+    entries = re.findall(pattern, string)
+    for URLS in entries:
+        downloader(URLS)
+        time.sleep(1)
+        downloaded_files = os.listdir('./')
+        for files in downloaded_files:
+            text = str(files.rsplit(' ', 1)[0])
+            CAPTION = str('[{}]({})'.format(text,URLS))
+            size =int((os.path.getsize(files))/(1024*1024))
+            if os.path.isdir(files):
+                print("Skipping Check for Directory. \n")
+            elif size < 50:
+                if files.endswith(('avi', 'flv', 'mkv', 'mov', 'mp4', 'webm', '3g2', '3gp', 'f4v', 'mk3d', 'divx', 'mpg', 'ogv', 'm4v', 'wmv')):
+                    print("Found Short Video")
+                    await context.bot.send_video(chat_id=update.message.chat_id, video=open(files, 'rb'), supports_streaming=True,caption = CAPTION, parse_mode='Markdown')
+                    print("Video {} was Sent Successfully!".format(files))
+                    os.remove(files)
+                    try:
+                        await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
+                    except BaseException:
+                        print("Message was already deleted.")
 
-            elif files.endswith(('aiff', 'alac', 'flac', 'm4a', 'mka', 'mp3', 'ogg', 'opus', 'wav','aac', 'ape', 'asf', 'f4a', 'f4b', 'm4b', 'm4p', 'm4r', 'oga', 'ogx', 'spx', 'vorbis', 'wma')):
-                print("Found Short Audio")
-                await context.bot.send_audio(chat_id=update.message.chat_id, audio=open(files, 'rb'))
-                print("Audio {} was Sent Successfully!".format(files))
-                os.remove(files)
-                try:
-                    await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
-                except BaseException:
-                    print("Message was already deleted. \n \n")    
+                elif files.endswith(('aiff', 'alac', 'flac', 'm4a', 'mka', 'mp3', 'ogg', 'opus', 'wav','aac', 'ape', 'asf', 'f4a', 'f4b', 'm4b', 'm4p', 'm4r', 'oga', 'ogx', 'spx', 'vorbis', 'wma')):
+                    print("Found Short Audio")
+                    await context.bot.send_audio(chat_id=update.message.chat_id, audio=open(files, 'rb'), caption = CAPTION, parse_mode='Markdown')
+                    print("Audio {} was Sent Successfully!".format(files))
+                    os.remove(files)
+                    try:
+                        await context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
+                    except BaseException:
+                        print("Message was already deleted. \n \n")    
 
-            elif files.endswith(('py','json','Procfile','txt','text','pip', 'md','git','pycache','cache'))==False:
+                elif files.endswith(('py','json','Procfile','txt','text','pip', 'md','git','pycache','cache'))==False:
+                    os.remove(files)
+                time.sleep(1)
+            else:
+                print(files + "is "+str(size)+" MB."+"\n"+"Which is greater than 50 MB, So removing it !!")
                 os.remove(files)
-            time.sleep(1)
-        else:
-            print(files + "is "+str(size)+" MB."+"\n"+"Which is greater than 50 MB, So removing it !!")
-            os.remove(files)
 
 def main() -> None:
     """Start the bot."""
